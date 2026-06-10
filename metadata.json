@@ -1,0 +1,6 @@
+{
+  "name": "Arif",
+  "description": "Maarif Asistanınız",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

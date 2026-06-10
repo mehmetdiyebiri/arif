@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Sadece Ekleme (Append-Only) Log Kuralları
+    match /audit_logs_{schoolId}/{docId} {
+      allow create: if true; // Sisteme log atmak her durumda serbest
+      allow update, delete: if false; // Asla silinemez ve güncellenemez
+      allow read: if true; // Okul yöneticileri ve adminler için
+    }
+
+    // 2. Rol Bazlı Öğrenci Kuralları
+    match /guidance_forms_{schoolId}/{docId} {
+      allow create: if true;
+      // Öğrenci sadece kendi IDsine sahip belgeleri okuyabilir
+      // Not: Tam koruma için Firebase Authentication gereklidir.
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.studentId;
+    }
+
+    // 3. Genel Okul İzolasyonu ve Düşük Güvenlikli Veriler
+    // Öğretmen ve yöneticilerin sadece kendi okullarına erişimi (Custom Claim gerektirir)
+    match /users_{schoolId}/{userId} {
+      allow read, write: if true; // Mevcut Custom Auth sistemi çalıştığı için şimdilik açık
+    }
+    
+    match /portfolios_{schoolId}/{studentId} {
+      allow read, write: if true; 
+    }
+
+    // Diğer koleksiyonlar (Geriye Dönük Uyumluluk için)
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

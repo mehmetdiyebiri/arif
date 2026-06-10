@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "SupportTicket": {
+      "title": "Support Ticket",
+      "description": "A support request from a school admin to the system administrator.",
+      "type": "object",
+      "properties": {
+        "schoolId": { "type": "string", "description": "ID of the school" },
+        "schoolName": { "type": "string", "description": "Name of the school" },
+        "senderName": { "type": "string", "description": "Name of the person who opened the ticket" },
+        "senderEmail": { "type": "string", "format": "email", "description": "Email of the person who opened the ticket" },
+        "senderRole": { "type": "string", "enum": ["admin", "teacher", "superadmin"], "description": "Role of the sender" },
+        "subject": { "type": "string", "description": "Subject of the support request" },
+        "status": { "type": "string", "enum": ["open", "answered", "closed"], "description": "Current status of the ticket" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "senderName": { "type": "string" },
+              "senderRole": { "type": "string" },
+              "content": { "type": "string" },
+              "date": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "required": ["schoolId", "senderName", "subject", "status", "createdAt", "messages"]
+    }
+  },
+  "firestore": {
+    "/support_tickets/{ticketId}": {
+      "schema": "SupportTicket",
+      "description": "Collection of support tickets"
+    }
+  }
+}
